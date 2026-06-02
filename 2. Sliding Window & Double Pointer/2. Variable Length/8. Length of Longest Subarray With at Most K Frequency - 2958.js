@@ -12,7 +12,7 @@ var maxSubarrayLength = function(nums, k) {
     for (let right = 0; right < nums.length; right++) {
         // 1. 【入】：当前右边界数字进入窗口，更新频率
         let x = nums[right];
-        cnt.set(x, (cnt.get(x) ?? 0) + 1);
+        cnt.set(x, (cnt.get(x) ?? 0) + 1);// 登记当前数字 x 进入窗口：如果在 Map 中存在则次数加 1，若第一次出现则初始化为 1
 
         // 2. 【缩】：如果当前数字 x 的出现次数超过了 k，说明窗口不合法了
         // 启动 while 循环，从左边一直踢人，直到窗口内 x 的次数降回 k 以内
@@ -28,3 +28,10 @@ var maxSubarrayLength = function(nums, k) {
 
     return ans;
 };
+
+/* * 核心逻辑：更新窗口内数字 x 的出现频率 
+ * 1. cnt.get(x) ── 尝试去 Map 里获取数字 x 之前出现的次数
+ * 2. ?? 0        ── 空值合并：如果 x 是新面孔（值为 undefined），则给它一个保底值 0
+ * 3. + 1         ── 在旧次数（或保底值 0）的基础上加 1，算出最新频率
+ * 4. cnt.set(...)── 将计算出的新频率重新登记回 Map 中
+ */
