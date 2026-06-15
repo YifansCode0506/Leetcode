@@ -35,3 +35,29 @@ var lowerBound = function(nums, target) {
 
     return right;
 }
+
+
+// successfulPairs 开始
+//    │
+//    ▼
+// [1] potions.sort() ─── 药水全部排好序 (只执行 1 次)
+//    │
+//    ▼
+// [2] 进入 spells 循环 (执行 N 次) ──────┐
+//        │                             │
+//        ▼                             │
+//    [3] 计算当前 target               │
+//        │                             │
+//        ▼                             │
+//    [4] 暂停主函数 ──► 跳转到 lowerBound 循环砍半
+//                           │          ▲
+//                           ▼          │
+//                      [5] 算出临界下标 ──┘
+//        │
+//        ▼
+//    [6] 覆盖写入 spells[i]
+//        │
+//   循环未完则继续 ───────┘
+//    │
+//    ▼
+// [7] return spells ─── 结束并交出最终答卷
