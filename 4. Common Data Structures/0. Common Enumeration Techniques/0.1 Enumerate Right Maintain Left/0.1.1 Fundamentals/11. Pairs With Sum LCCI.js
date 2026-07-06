@@ -34,3 +34,60 @@ var pairSums = function (nums, target) {
     // 返回存储了所有有效数对的二维数组
     return ans;
 };
+
+/*
+以 nums = [5, 6, 5, 6]，target = 11 为例，
+我们通过追踪每一次循环中变量的值和内存中 map 与 ans 的状态变化，来演示代码的完整执行流程。
+
+初始状态map 为空：Map {}
+ans 为空：[]
+🔄 第一轮循环
+当前数字 num: 5
+计算互补值 complement: 11 - 5 = 6
+读取计数量 complementCount: map.get(6) 返回 undefined，通过 ?? 0 赋值为 0。
+逻辑分支:
+if (0 > 0) 为假，进入 else 分支。
+读取当前数字 5 的计数 currentCount：map.get(5) ?? 0 => 0。
+更新 Map：map.set(5, 0 + 1)。
+本轮结束状态:map: Map { 5 => 1 }
+ans: []
+
+🔄 第二轮循环
+当前数字 num: 6
+计算互补值 complement: 11 - 6 = 5
+读取计数量 complementCount: map.get(5) 返回 1。
+逻辑分支:
+if (1 > 0) 为真，进入 if 分支。
+塞入结果：ans.push([5, 6])。
+消耗计数：map.set(5, 1 - 1) => 数字 5 的可用计数变为 0。
+本轮结束状态:
+map: Map { 5 => 0 }
+ans: [[5, 6]]
+
+🔄 第三轮循环
+当前数字 num: 5
+计算互补值 complement: 11 - 5 = 6
+读取计数量 complementCount: map.get(6) 返回 undefined => 0。
+逻辑分支:
+if (0 > 0) 为假，进入 else 分支。
+读取当前数字 5 的计数 currentCount：map.get(5) ?? 0 => 此时读取到的是上轮清零后的 0。
+更新 Map：map.set(5, 0 + 1) => 数字 5 的可用计数重新变为 1。
+本轮结束状态:
+map: Map { 5 => 1 }
+ans: [[5, 6]]
+
+🔄 第四轮循环
+当前数字 num: 6
+计算互补值 complement: 11 - 6 = 5
+读取计数量 complementCount: map.get(5) 返回 1（源于第三轮循环刚存进去的 5）。
+逻辑分支:
+if (1 > 0) 为真，进入 if 分支。
+塞入结果：ans.push([5, 6])。
+消耗计数：map.set(5, 1 - 1) => 数字 5 的可用计数再次清零。
+本轮结束状态:
+map: Map { 5 => 0 }
+ans: [[5, 6], [5, 6]]
+
+🏁 最终输出
+循环结束，函数执行 return ans，返回最终结果：[[5, 6], [5, 6]]。
+*/
