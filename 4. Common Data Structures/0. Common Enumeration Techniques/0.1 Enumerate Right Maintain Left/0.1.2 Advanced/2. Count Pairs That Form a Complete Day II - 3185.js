@@ -43,3 +43,41 @@ var countCompleteDayPairs = function(hours) {
     }
     return ans;
 }; 
+
+
+/**
+ * @param {number[]} hours
+ * @return {number[][]} 返回所有满足条件的二维下标对数组 [[i1, j1], [i2, j2], ...]
+ */
+var countCompleteDayPairsWithIndices = function(hours) {
+    const H = 24;
+    
+    // 1. 账本升级：创建一个长度为 24 的数组，每一格都初始化为一个独立的空数组 []
+    // 索引 (0-23) 代表余数，cnt[余数] 里面存放的是【所有拥有该余数的历史元素的“真实下标”】
+    const cnt = Array.from({ length: H }, () => []);
+    
+    // 初始化结果集，用于存放所有的下标对 [i, j]
+    const ans = [];
+
+    // 2. 开始线性遍历小时数组，此时必须用标准的带有索引的循环，因为我们需要捕获当前的下标 j
+    for (let j = 0; j < hours.length; j++) {
+        const remainder = hours[j] % H;          // 计算当前元素的余数
+        const targetRemainder = (H - remainder) % H; // 计算所需的互补余数
+
+        // 3. 查账与连线：获取拥有互补余数的历史下标数组
+        const pastIndices = cnt[targetRemainder];
+        
+        // 如果历史上有同伴存在（数组不为空）
+        for (const i of pastIndices) {
+            // 每一个历史下标 i 都在当前 j 的左边，天生满足 i < j
+            // 直接将它们配对成 [i, j] 存入结果集中
+            ans.push([i, j]);
+        }
+
+        // 4. 登记入账：将当前的下标 j 记录到它自己余数对应的数组中，供未来的元素匹配
+        cnt[remainder].push(j);
+    }
+
+    // 返回所有找到的下标对
+    return ans;
+};
