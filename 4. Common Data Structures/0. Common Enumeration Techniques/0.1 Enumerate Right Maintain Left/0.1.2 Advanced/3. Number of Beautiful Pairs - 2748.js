@@ -1,48 +1,60 @@
 /**
+ * 需求：统计美丽数对数量；若 nums[i] 的最高位与 nums[j] 的最低位互质，则 (i, j) 是美丽数对。
+ * 思路：枚举当前 nums[j]，维护左边数字最高位 1~9 的出现次数。
+ *
  * @param {number[]} nums
  * @return {number}
  */
 var countBeautifulPairs = function(nums) {
-    // 初始化美丽下标对的总数量
+    // ans 记录美丽数对总数。
     let ans = 0;
-    
-    // 创建一个长度为 10 的数组用于统计历史元素的“最高位”数字出现的频次
-    // 索引 (1-9) 代表最高位数字，值代表该最高位数字出现的次数
+
+    // cnt[d] 表示左边历史数字中，最高位为 d 的数字数量。
     const cnt = new Array(10).fill(0);
 
-    // 线性单趟遍历数组中的每一个数字 x
-    for (let x of nums) {
-        
-        // 1. 配对阶段：遍历可能的所有历史最高位数字 y (1 到 9)
-        for (let y = 1; y < 10; y++) {
-            // 如果历史上确实出现过最高位为 y 的数字，且 y 与当前数字的个位数 (x % 10) 互质
-            if (cnt[y] > 0 && gcd(y, x % 10) === 1) {
-                // 当前数字能与历史上所有最高位为 y 的元素各配成一对，直接累加历史出现次数
-                ans += cnt[y];
+    // 遍历每个数字 num，把它当成右端点 nums[j]。
+    for (const num of nums) {
+        // lastDigit 是当前数字的最低位，用来和历史最高位判断互质。
+        const lastDigit = num % 10;
+
+        // 枚举所有可能的历史最高位 firstDigit。
+        for (let firstDigit = 1; firstDigit < 10; firstDigit++) {
+            // 如果最高位和当前最低位互质，则这些历史数字都能与当前 num 组成美丽数对。
+            if (gcd(firstDigit, lastDigit) === 1) {
+                ans += cnt[firstDigit];
             }
         }
 
-        // 2. 剥离阶段：通过循环不断除以 10 并向下取整，剥离出当前数字 x 的最高位数字
-        while (x >= 10) {
-            x = Math.floor(x / 10);
+        // first 是临时变量，用来剥离出当前数字的最高位。
+        let first = num;
+
+        // 不断去掉最低位，直到只剩最高位。
+        while (first >= 10) {
+            first = Math.floor(first / 10);
         }
 
-        // 3. 登记阶段：将当前数字对应的最高位数字在账本 cnt 中的计数加 1，作为历史记录供后续元素配对
-        cnt[x]++;
+        // 把当前数字的最高位登记进历史账本。
+        cnt[first]++;
     }
 
-    // 返回累计的完美对数
+    // 返回美丽数对数量。
     return ans;
 };
 
 /**
- * 辗转相除法（欧几里得算法）计算最大公约数
- * @param {number} a 
- * @param {number} b 
+ * 需求：计算 a 和 b 的最大公约数，用于判断两个数字是否互质。
+ * 思路：最大公约数为 1 时，说明两个数互质。
+ *
+ * @param {number} a
+ * @param {number} b
  * @return {number}
  */
 function gcd(a, b) {
-    // 递归基准：当余数 b 为 0 时，最大公约数即为 a
-    // 否则继续递归计算 b 和 a % b 的最大公约数
-    return b === 0 ? a : gcd(b, a % b);
+    // 当 b 为 0 时，a 就是最大公约数。
+    if (b === 0) {
+        return a;
+    }
+
+    // 递归计算 b 和 a % b 的最大公约数。
+    return gcd(b, a % b);
 }

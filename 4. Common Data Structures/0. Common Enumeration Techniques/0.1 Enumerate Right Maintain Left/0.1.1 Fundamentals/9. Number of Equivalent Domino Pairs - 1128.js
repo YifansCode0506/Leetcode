@@ -1,34 +1,33 @@
 /**
+ * 需求：统计等价多米诺骨牌对数量；[a,b] 和 [b,a] 视为同一种骨牌。
+ * 思路：把每张骨牌规整成唯一特征值，枚举当前骨牌时统计左边同特征骨牌数量。
+ *
  * @param {number[][]} dominoes
  * @return {number}
  */
-
 var numEquivDominoPairs = function(dominoes) {
-    // 1. 创建一个长度为 100 的计数器数组，初始化为 0
-    // 用来记录每种“两位数特征值”（11-99）出现了多少次
-    let num = new Array(100).fill(0);
-    
-    // 初始化等价骨牌对的总数
+    // cnt[val] 表示特征值为 val 的骨牌在左侧历史中出现过多少次。
+    const cnt = new Array(100).fill(0);
+
+    // ans 记录等价骨牌对总数。
     let ans = 0;
 
-    // 2. 遍历每一张多米诺骨牌
-    for (let d of dominoes) {
-        // 强行规整顺序：让 a 是较小的数，b 是较大的数
-        let a = Math.min(d[0], d[1]);
-        let b = Math.max(d[0], d[1]);
-        
-        // 将二元组 [a, b] 压缩组合成一个唯一的两位数
-        let val = a * 10 + b;
+    // 遍历每一张骨牌，把当前骨牌当成右端点。
+    for (const d of dominoes) {
+        // a 取较小点数，b 取较大点数，用来消除 [x,y] 和 [y,x] 的顺序差异。
+        const a = Math.min(d[0], d[1]);
+        const b = Math.max(d[0], d[1]);
 
-        // 核心计数逻辑：
-        // 如果当前特征值 val 之前已经出现了 n 次，
-        // 那么当前这张新骨牌就能和之前的 n 张骨牌分别组成一对，所以答案增加 n。
-        ans += num[val];
+        // 把规整后的二元组压成一个唯一数字，例如 [2,5] -> 25。
+        const val = a * 10 + b;
 
-        // 更新计数器：把当前这张骨牌的特征值登记到账本中，次数加 1
-        num[val]++;
+        // 当前骨牌可以和左边所有同特征骨牌配对。
+        ans += cnt[val];
+
+        // 把当前骨牌登记进该特征值的计数器。
+        cnt[val]++;
     }
 
-    // 3. 返回最终得到的有效下标对数量
+    // 返回所有等价骨牌对数量。
     return ans;
 };

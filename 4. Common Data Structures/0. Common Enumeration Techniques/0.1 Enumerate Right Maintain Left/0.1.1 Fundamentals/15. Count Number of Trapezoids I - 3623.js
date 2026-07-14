@@ -1,39 +1,52 @@
 /**
+ * 需求：统计可以组成水平梯形的点集数量，并对 1e9+7 取模。
+ * 思路：同一条水平线任选两个点可以作为一条底边；枚举当前水平线，维护左边所有水平线的底边组合数总和。
+ *
  * @param {number[][]} points
  * @return {number}
  */
 var countTrapezoids = function(points) {
-    const MOD = 1000000007n; // 使用 BigInt 定义模数，防止大数溢出
-    
-    // 1. 统计每条水平线（即相同 y 坐标）上的点数
+    // MOD 使用 BigInt，避免组合数相乘时超过 Number 安全整数范围。
+    const MOD = 1000000007n;
+
+    // cnt 的 key 是 y 坐标，value 是这条水平线上有多少个点。
     const cnt = new Map();
+
+    // 先按 y 坐标分组统计点数。
     for (const p of points) {
-        const y = p[1]; // 获取当前点的 y 坐标
+        // y 表示当前点所在水平线。
+        const y = p[1];
+
+        // 当前水平线点数加 1。
         cnt.set(y, (cnt.get(y) ?? 0) + 1);
     }
 
-    let ans = 0n; // 存储最终的梯形总数（BigInt 形式）
-    let s = 0n;   // 存储当前处理过的前面所有水平线的两点组合数之和
+    // ans 存储最终梯形数量，使用 BigInt 计算。
+    let ans = 0n;
 
-    // 2. 遍历每一条水平线上的点数
+    // sum 保存已经处理过的水平线中，“任选两个点作为底边”的组合数总和。
+    let sum = 0n;
+
+    // 枚举每条水平线上的点数，相当于在“水平线”层面枚举右端点。
     for (const c of cnt.values()) {
-        // 如果一条线上的点数少于 2 个，根本无法构成边，直接跳过
-        if (c < 2) continue; 
-        
-        // 将点数转换为 BigInt 方便后续统一计算
-        const count = BigInt(c); 
-        
-        // 计算当前水平线上任选 2 个点的组合数：k = c * (c - 1) / 2
-        const k = (count * (count - 1n)) / 2n;
+        // 少于 2 个点的水平线不能形成一条底边。
+        if (c < 2) {
+            continue;
+        }
 
-        // 核心增量累加：当前线的组合数 k 与之前所有线的组合数总和 s 相乘，
-        // 得到由当前线与前面所有线组合出的新梯形数量，并累加到总答案中
-        ans += s * k;
+        // 转成 BigInt，确保后续乘法安全。
+        const count = BigInt(c);
 
-        // 更新历史组合数总和：将当前线的组合数 k 累加到 s 中，供后续的线使用
-        s += k;
+        // k 是当前水平线任选两个点作为底边的方案数 C(c, 2)。
+        const k = count * (count - 1n) / 2n;
+
+        // 当前线的每一种底边，都可以和左边任意一条历史底边组成一个梯形。
+        ans += sum * k;
+
+        // 把当前线的底边方案数加入历史总和，供后续水平线使用。
+        sum += k;
     }
 
-    // 3. 将 BigInt 结果转换回普通的 Number 并返回
+    // 对 MOD 取模后转回 Number，符合题目返回类型。
     return Number(ans % MOD);
 };
