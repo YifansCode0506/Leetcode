@@ -34,3 +34,23 @@ var minimumSum = function(nums) {
     // 如果 ans 依然是 Infinity，说明没有找到任何合法的山形三元组，返回 -1；否则返回最小和
     return ans === Infinity ? -1 : ans;
 };
+
+// 例子：
+// nums = [8,6,1,5,3];
+// suf[n - 1] = nums[n - 1] = 3
+
+// 进入 for 循环，比较 nums[n - 2] 和 suf[n - 2 + 1] 得出：
+//     suf = [1,1,1,3,3]
+// pre = nums[0] = 8;
+// 进入for循环：
+//     第一轮：
+//         j = 1; nums[j] = 6;
+//         if()不成立; ans = Infinity; pre = 6;
+//     第二轮：
+//         j = 2; nums[j] = 1;
+//         if()不成立; ans = Infinity; pre = 1
+//     第三轮：
+//         j = 3; nums[j] = 5
+//         if()成立；ans = 1 + 5 + 3 = 9; pre = 1;
+//     结束循环
+// 结果为ans = 9;
