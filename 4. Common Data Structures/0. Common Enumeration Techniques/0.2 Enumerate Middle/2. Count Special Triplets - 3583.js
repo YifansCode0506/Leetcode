@@ -115,6 +115,7 @@ var specialTriplets = function(nums) {
 
 
 // 如果将题目改写为改写为输出所有满足条件的具体下标三元组 [i, j, k]（或对应的数值三元组）
+
 /**
  * @param {number[]} nums
  * @return {number[][]} 返回所有满足条件的三元组下标数组 [[i1, j1, k1], [i2, j2, k2], ...]
