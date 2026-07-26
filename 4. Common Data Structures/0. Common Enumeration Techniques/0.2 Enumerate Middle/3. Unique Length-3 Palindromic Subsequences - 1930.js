@@ -2,26 +2,47 @@
  * @param {string} s
  * @return {number}
  */
+
 var countPalindromicSubsequence = function(s) {
+    // 获取字母 'a' 的 ASCII 码值 (97)，作为后续索引偏移量的基准
     const ordA = 'a'.charCodeAt(0);
+    // 初始化独立回文子序列的总计数器
     let ans = 0;
-    for (let alpha = ordA; alpha <= 'z'.charCodeAt(0); alpha++) { // 枚举两侧字母 alpha
+
+    // 1. 枚举 26 个英文字母（从 'a' 到 'z' 的 ASCII 码）
+    for (let alpha = ordA; alpha <= 'z'.charCodeAt(0); alpha++) { 
+        // 将当前的 ASCII 码值还原为单字符字符串（例如 97 -> 'a'）
         const ch = String.fromCharCode(alpha);
-        const i = s.indexOf(ch); // 最左边的 alpha 的下标
-        if (i < 0) { // s 中没有 alpha
+        
+        // 获取字符 ch 在字符串 s 中第一次（最左侧）出现的下标
+        const i = s.indexOf(ch); 
+        // 若返回值小于 0，说明字符 ch 在字符串 s 中根本不存在，跳过本次循环
+        if (i < 0) { 
             continue;
         }
-        const j = s.lastIndexOf(ch); // 最右边的 alpha 的下标
+        
+        // 获取字符 ch 在字符串 s 中最后一次（最右侧）出现的下标
+        const j = s.lastIndexOf(ch); 
 
+        // 创建一个长度为 26 的布尔数组，初始全为 false，用于标记当前 [i+1, j-1] 区间内哪些中间字符已被统计
         const has = Array(26).fill(false);
-        for (let k = i + 1; k < j; k++) { // 枚举中间字母 mid
+        
+        // 2. 遍历首尾下标之间的所有字符（区间为 i + 1 到 j - 1）
+        for (let k = i + 1; k < j; k++) { 
+            // 计算当前中间字符相对于 'a' 的数组索引下标 (0-25)
             const mid = s.charCodeAt(k) - ordA;
+            
+            // 若该中间字符在此之前尚未被标记过
             if (!has[mid]) {
-                has[mid] = true; // 避免重复统计
+                // 将该字符在布尔数组中标记为 true，防止后续重复字符重复计数
+                has[mid] = true; 
+                // 全局答案计数加 1
                 ans++;
             }
         }
     }
+
+    // 返回统计出的无重复长度为 3 的回文子序列总数
     return ans;
 };
 
