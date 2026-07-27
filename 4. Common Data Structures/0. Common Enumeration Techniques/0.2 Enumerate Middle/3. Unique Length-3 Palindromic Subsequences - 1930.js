@@ -47,30 +47,41 @@ var countPalindromicSubsequence = function(s) {
 };
 
 var countPalindromicSubsequence = function(s) {
-    const n = s.length;
     const ordA = 'a'.charCodeAt(0);
-
-    // 统计 [1,n-1] 每个字母的个数
-    const sufCnt = Array(26).fill(0);
-    for (let i = 1; i < n; i++) {
-        sufCnt[s.charCodeAt(i) - ordA]++;
+    // 1. 初始化右翼静态账本 suf：长度 26 的数组，统计每个字母出现的频次
+    const suf = new Array(26).fill(0);
+    for (let i = 0; i < s.length; i++) {
+        suf[s.charCodeAt(i) - ordA]++;
     }
 
-    const preHas = Array(26).fill(false);
-    const has = Array.from({ length: 26 }, () => Array(26).fill(false));
     let ans = 0;
-    for (let i = 1; i < n - 1; i++) { // 枚举中间字母 mid
+    // 2. 初始化左翼动态账本 pre：长度 26 的数组，记录历史上已踩过的字母频次
+    const pre = new Array(26).fill(0);
+    
+    // 3. 二维布尔去重账本 has：26 x 26 的矩阵，标记 "x + mid + x" 组合是否已被捕获
+    // has[x][mid] 为 true 表示以字母 x 为两侧、字母 mid 为中间的回文已经统计过
+    const has = Array.from({ length: 26 }, () => new Array(26).fill(false));
+
+    // 4. 线性遍历字符串，当前字符扮演【中间轴心字母 mid】
+    for (let i = 0; i < s.length; i++) {
         const mid = s.charCodeAt(i) - ordA;
-        sufCnt[mid]--; // 撤销 mid 的计数，sufCnt 剩下的就是后缀 [i+1,n-1] 每个字母的个数
-        preHas[s.charCodeAt(i - 1) - ordA] = true; // 记录前缀 [0,i-1] 有哪些字母
-        for (let alpha = 0; alpha < 26; alpha++) { // 枚举两侧字母 alpha
-            // 判断 mid 的左右两侧是否都有字母 alpha
-            if (preHas[alpha] && sufCnt[alpha] && !has[mid][alpha]) {
-                has[mid][alpha] = true;
-                ans++;
+
+        // 【关键撤销步】：当前字母成为了中间点，不再属于“右翼未来”，将其从 suf 中扣减 1
+        suf[mid]--;
+
+        // 【两翼扫对暗号】：尝试把 26 个英文字母 x 作为两侧的边界字母
+        for (let x = 0; x < 26; x++) {
+            // 条件：字母 x 在左边出现过(pre[x]>0) AND 在右边出现过(suf[x]>0) AND 这种组合此前从未出现过
+            if (pre[x] > 0 && suf[x] > 0 && !has[x][mid]) {
+                has[x][mid] = true; // 登记该组合已捕获，防止重复统计
+                ans++;              // 独立回文数加 1
             }
         }
+
+        // 【关键登记步】：中间点移走前，将当前的 mid 字母登记入左翼账本 pre
+        pre[mid]++;
     }
+
     return ans;
 };
 
